@@ -9,7 +9,7 @@ import { colors, radii, spacing } from '../constants/theme';
 type Props = {
   technique: Technique;
   onClose: () => void;
-  onComplete: (summary: { technique: string; cycles: number }) => void;
+  onComplete: (summary: { techniqueId: string; cyclesCompleted: number }) => void;
 };
 
 export function SessionScreen({ technique, onClose, onComplete }: Props) {
@@ -26,17 +26,20 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
     reset,
   } = useBreathingCycle(technique, technique.defaultCycles);
 
+  const hasCompletedRef = React.useRef(false);
+
   React.useEffect(() => {
     // autostart when the screen mounts
     start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  React.useEffect(() => {
-    if (isComplete) {
-      onComplete({ technique: technique.label, cycles: totalCycles });
-    }
-  }, [isComplete]);
+    React.useEffect(() => {
+        if (isComplete && !hasCompletedRef.current) {
+            hasCompletedRef.current = true;
+            onComplete({ techniqueId: technique.id, cyclesCompleted: totalCycles });
+        }
+    }, [isComplete]);
 
   const remainingCycles = totalCycles - cyclesCompleted;
 
@@ -73,7 +76,13 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
       </Text>
 
       <View style={styles.controls}>
-        <Pressable onPress={reset} hitSlop={12}>
+          <Pressable
+              onPress={() => {
+                  hasCompletedRef.current = false;
+                  reset();
+              }}
+              hitSlop={12}
+          >
           <Feather name="refresh-cw" size={20} color={colors.textSecondary} />
         </Pressable>
         <Pressable
