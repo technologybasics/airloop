@@ -54,7 +54,7 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
       </View>
 
       <View style={styles.circleWrap}>
-        <BreathingCircle phase={currentPhase} secondsLeft={secondsLeft} />
+        <BreathingCircle phase={currentPhase} secondsLeft={secondsLeft} isRunning={isRunning} />
       </View>
 
       <View style={styles.dots}>

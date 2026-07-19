@@ -6,21 +6,29 @@ import { colors } from '../constants/theme';
 type Props = {
   phase: Phase;
   secondsLeft: number;
+  isRunning: boolean;
 };
 
 const BASE_SIZE = 120;
 const RING_SIZE = 220;
 
-export function BreathingCircle({ phase, secondsLeft }: Props) {
+export function BreathingCircle({ phase, secondsLeft, isRunning }: Props) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.timing(scaleAnim, {
-      toValue: phase.scale,
-      duration: phase.durationSec * 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [phase, scaleAnim]);
+      if (!isRunning) {
+          // Paused or not yet started — freeze in place, don't snap back to 1
+          scaleAnim.stopAnimation();
+          return;
+      }
+      const anim = Animated.timing(scaleAnim, {
+          toValue: phase.scale,
+          duration: phase.durationSec * 1000,
+          useNativeDriver: true,
+      });
+      anim.start();
+      return () => anim.stop();
+  }, [phase, isRunning, scaleAnim]);
 
   return (
     <View style={styles.wrap}>
