@@ -27,12 +27,12 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
   } = useBreathingCycle(technique, technique.defaultCycles);
 
   const hasCompletedRef = React.useRef(false);
+  const [hasStarted, setHasStarted] = React.useState(false);
 
-  React.useEffect(() => {
-    // autostart when the screen mounts
+  const handleStart = () => {
+    setHasStarted(true);
     start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
     React.useEffect(() => {
         if (isComplete && !hasCompletedRef.current) {
@@ -76,28 +76,36 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
       </Text>
 
       <View style={styles.controls}>
-          <Pressable
-              onPress={() => {
-                  hasCompletedRef.current = false;
-                  reset();
-              }}
-              hitSlop={12}
-          >
-          <Feather name="refresh-cw" size={20} color={colors.textSecondary} />
-        </Pressable>
-        <Pressable
-          onPress={isRunning ? pause : start}
-          style={styles.playButton}
-        >
-          <Feather
-            name={isRunning ? 'pause' : 'play'}
-            size={22}
-            color={colors.background}
-          />
-        </Pressable>
-        <Pressable onPress={onClose} hitSlop={12}>
-          <Feather name="x" size={20} color={colors.textSecondary} />
-        </Pressable>
+        {hasStarted ? (
+          <>
+            <Pressable
+                onPress={() => {
+                    hasCompletedRef.current = false;
+                    reset();
+                }}
+                hitSlop={12}
+            >
+              <Feather name="refresh-cw" size={20} color={colors.textSecondary} />
+            </Pressable>
+            <Pressable
+              onPress={isRunning ? pause : start}
+              style={styles.playButton}
+            >
+              <Feather
+                name={isRunning ? 'pause' : 'play'}
+                size={22}
+                color={colors.background}
+              />
+            </Pressable>
+            <Pressable onPress={onClose} hitSlop={12}>
+              <Feather name="x" size={20} color={colors.textSecondary} />
+            </Pressable>
+          </>
+        ) : (
+          <Pressable onPress={handleStart} style={styles.playButton} hitSlop={12}>
+            <Feather name="play" size={22} color={colors.background} />
+          </Pressable>
+        )}
       </View>
     </View>
   );
