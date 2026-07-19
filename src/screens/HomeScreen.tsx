@@ -7,9 +7,10 @@ import { colors, radii, spacing } from '../constants/theme';
 type Props = {
   streakDays: number;
   onSelectTechnique: (technique: Technique) => void;
+  defaultTechniqueId: string | null;
 };
 
-export function HomeScreen({ streakDays, onSelectTechnique }: Props) {
+export function HomeScreen({ streakDays, onSelectTechnique, defaultTechniqueId }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.greeting}>
@@ -36,16 +37,15 @@ export function HomeScreen({ streakDays, onSelectTechnique }: Props) {
           onPress={() => onSelectTechnique(technique)}
         >
           <View style={styles.cardIconWrap}>
-            <Feather
-              name={technique.id === 'box' ? 'square' : 'moon'}
-              size={22}
-              color={colors.primary}
-            />
+            <Feather name={technique.icon as any} size={22} color={colors.primary} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.cardTitle}>{technique.label}</Text>
             <Text style={styles.cardSubtitle}>{technique.subtitle}</Text>
           </View>
+          {technique.id === defaultTechniqueId && (
+            <Feather name="star" size={14} color={colors.accent} />
+          )}
           <Feather name="chevron-right" size={18} color={colors.textMuted} />
         </Pressable>
       ))}

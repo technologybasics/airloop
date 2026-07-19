@@ -10,9 +10,11 @@ type Props = {
   technique: Technique;
   onClose: () => void;
   onComplete: (summary: { techniqueId: string; cyclesCompleted: number }) => void;
+  isDefault: boolean;
+  onToggleDefault: () => void;
 };
 
-export function SessionScreen({ technique, onClose, onComplete }: Props) {
+export function SessionScreen({ technique, onClose, onComplete, isDefault, onToggleDefault }: Props) {
   const {
     currentPhase,
     phaseIndex,
@@ -50,7 +52,9 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
           <Feather name="chevron-left" size={20} color={colors.primary} />
         </Pressable>
         <Text style={styles.headerTitle}>{technique.label}</Text>
-        <Feather name="settings" size={18} color={colors.primary} />
+        <Pressable onPress={onToggleDefault} hitSlop={12}>
+          <Feather name="star" size={18} color={isDefault ? colors.accent : colors.primary} />
+        </Pressable>
       </View>
 
       <View style={styles.circleWrap}>
@@ -102,8 +106,9 @@ export function SessionScreen({ technique, onClose, onComplete }: Props) {
             </Pressable>
           </>
         ) : (
-          <Pressable onPress={handleStart} style={styles.playButton} hitSlop={12}>
-            <Feather name="play" size={22} color={colors.background} />
+          <Pressable onPress={handleStart} style={styles.startButton} hitSlop={8}>
+            <Feather name="play" size={20} color={colors.background} />
+            <Text style={styles.startButtonText}>Start</Text>
           </Pressable>
         )}
       </View>
@@ -171,5 +176,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  startButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    height: 60,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.full,
+    backgroundColor: colors.accent,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  startButtonText: {
+    color: colors.background,
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });

@@ -40,4 +40,61 @@ export const FOUR_SEVEN_EIGHT: Technique = {
   ],
 };
 
-export const TECHNIQUES: Technique[] = [BOX_BREATHING, FOUR_SEVEN_EIGHT];
+export const COHERENT_BREATHING: Technique = {
+  id: 'coherent',
+  label: 'Coherent breathing',
+  subtitle: '5-5 · balance and coherence',
+  icon: 'activity',
+  defaultCycles: 12,
+  phases: [
+    { name: 'Inhale', durationSec: 5, scale: 1.7 },
+    { name: 'Exhale', durationSec: 5, scale: 1 },
+  ],
+};
+
+export const CALM_BREATHING: Technique = {
+  id: 'calm',
+  label: 'Calm breathing',
+  subtitle: '6-6 · slow and steady',
+  icon: 'wind',
+  defaultCycles: 10,
+  phases: [
+    { name: 'Inhale', durationSec: 6, scale: 1.7 },
+    { name: 'Exhale', durationSec: 6, scale: 1 },
+  ],
+};
+
+export const DEEP_RESET: Technique = {
+  id: 'deepreset',
+  label: 'Deep reset',
+  subtitle: '4-4-6-2 · release tension',
+  icon: 'sunrise',
+  defaultCycles: 8,
+  phases: [
+    { name: 'Inhale', durationSec: 4, scale: 1.7 },
+    { name: 'Hold', durationSec: 4, scale: 1.7 },
+    { name: 'Exhale', durationSec: 6, scale: 1 },
+    { name: 'Hold', durationSec: 2, scale: 1 },
+  ],
+};
+
+export const ENERGIZE: Technique = {
+  id: 'energize',
+  label: 'Energize',
+  subtitle: '2-0-2-0 · quick energizing breath',
+  icon: 'zap',
+  defaultCycles: 20,
+  phases: [
+    { name: 'Inhale', durationSec: 2, scale: 1.7 },
+    { name: 'Exhale', durationSec: 2, scale: 1 },
+  ],
+};
+
+export const TECHNIQUES: Technique[] = [
+  BOX_BREATHING,
+  FOUR_SEVEN_EIGHT,
+  COHERENT_BREATHING,
+  CALM_BREATHING,
+  DEEP_RESET,
+  ENERGIZE,
+];
