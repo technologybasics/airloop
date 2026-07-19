@@ -64,6 +64,36 @@ export async function clearSessions(): Promise<void> {
     }
 }
 
+/**
+ * Calculates the current consecutive-day streak from a list of sessions.
+ * A day counts if it has at least one completed session. The streak counts
+ * backward from today; if today has no session yet, it counts backward from
+ * yesterday instead so an unbroken streak isn't zeroed out before the day ends.
+ * Breaks (stops counting) at the first missed day.
+ */
+export function getCurrentStreak(sessions: Session[]): number {
+    const activeDays = new Set(
+        sessions.map((session) => toCalendarDay(new Date(session.completedAt)))
+    );
+
+    const cursor = new Date();
+    if (!activeDays.has(toCalendarDay(cursor))) {
+        cursor.setDate(cursor.getDate() - 1);
+    }
+
+    let streak = 0;
+    while (activeDays.has(toCalendarDay(cursor))) {
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+    }
+
+    return streak;
+}
+
 function generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function toCalendarDay(date: Date): string {
+    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }

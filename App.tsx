@@ -1,21 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { SessionScreen } from './src/screens/SessionScreen';
 import { Technique } from './src/constants/phases';
 import { colors } from './src/constants/theme';
-import { saveSession, getSessions } from './src/services/sessionStore';
+import { saveSession, getSessions, getCurrentStreak } from './src/services/sessionStore';
 
 export default function App() {
     const [activeTechnique, setActiveTechnique] = useState<Technique | null>(
         null
     );
+    const [streakDays, setStreakDays] = useState(0);
+
+    const refreshStreak = async () => {
+        try {
+            const sessions = await getSessions();
+            setStreakDays(getCurrentStreak(sessions));
+        } catch (error) {
+            console.error('Could not load streak:', error);
+        }
+    };
+
+    useEffect(() => {
+        refreshStreak();
+    }, []);
 
     const onComplete = async (summary: { techniqueId: string; cyclesCompleted: number }) => {
         try {
             await saveSession(summary);
             console.log('Session saved');
+            await refreshStreak();
         } catch (error) {
             console.error('Could not save session, continuing anyway:', error);
         }
@@ -37,7 +52,7 @@ export default function App() {
                     />
                 ) : (
                     <HomeScreen
-                        streakDays={4}
+                        streakDays={streakDays}
                         onSelectTechnique={setActiveTechnique}
                     />
                 )}
