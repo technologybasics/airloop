@@ -63,10 +63,20 @@ export function HomeScreen({
           <Text style={styles.greetingBig}>Ready to breathe?</Text>
         </View>
         <View style={styles.headerIcons}>
-          <Pressable onPress={onOpenProgress} hitSlop={12}>
+          <Pressable
+            onPress={onOpenProgress}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="View progress"
+          >
             <Feather name="bar-chart-2" size={20} color={colors.textSecondary} />
           </Pressable>
-          <Pressable onPress={onOpenSettings} hitSlop={12}>
+          <Pressable
+            onPress={onOpenSettings}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Open settings"
+          >
             <Feather name="settings" size={20} color={colors.textSecondary} />
           </Pressable>
         </View>

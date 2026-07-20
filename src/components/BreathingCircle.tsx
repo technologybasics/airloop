@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, Animated, StyleSheet, Text, View } from 'react-native';
 import { Phase } from '../constants/phases';
 import { colors } from '../constants/theme';
 
@@ -14,11 +14,32 @@ const RING_SIZE = 220;
 
 export function BreathingCircle({ phase, secondsLeft, isRunning }: Props) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const [reduceMotionEnabled, setReduceMotionEnabled] = useState(false);
+
+  useEffect(() => {
+      let mounted = true;
+      AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
+          if (mounted) setReduceMotionEnabled(enabled);
+      });
+      const subscription = AccessibilityInfo.addEventListener(
+          'reduceMotionChanged',
+          setReduceMotionEnabled
+      );
+      return () => {
+          mounted = false;
+          subscription.remove();
+      };
+  }, []);
 
   useEffect(() => {
       if (!isRunning) {
           // Paused or not yet started — freeze in place, don't snap back to 1
           scaleAnim.stopAnimation();
+          return;
+      }
+      if (reduceMotionEnabled) {
+          // Respect Reduce Motion: snap to the target scale, don't animate
+          scaleAnim.setValue(phase.scale);
           return;
       }
       const anim = Animated.timing(scaleAnim, {
@@ -28,13 +49,21 @@ export function BreathingCircle({ phase, secondsLeft, isRunning }: Props) {
       });
       anim.start();
       return () => anim.stop();
-  }, [phase, isRunning, scaleAnim]);
+  }, [phase, isRunning, scaleAnim, reduceMotionEnabled]);
+
+  useEffect(() => {
+      if (!isRunning) return;
+      AccessibilityInfo.announceForAccessibility(`${phase.name}, ${secondsLeft} seconds`);
+  }, [phase.name, isRunning]);
 
   return (
     <View style={styles.wrap}>
       <View style={styles.ring} />
       <Animated.View
         style={[styles.circle, { transform: [{ scale: scaleAnim }] }]}
+        accessible
+        accessibilityLiveRegion="polite"
+        accessibilityLabel={`${phase.name}, ${secondsLeft} seconds`}
       >
         <Text style={styles.phaseLabel}>{phase.name}</Text>
         <Text style={styles.count}>{secondsLeft}</Text>

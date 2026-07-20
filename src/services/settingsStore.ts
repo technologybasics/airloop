@@ -6,12 +6,14 @@ interface Settings {
     defaultTechniqueId: string | null;
     hapticsEnabled: boolean;
     cycleCounts: Record<string, number>;
+    hasOnboarded: boolean;
 }
 
 const DEFAULT_SETTINGS: Settings = {
     defaultTechniqueId: null,
     hapticsEnabled: true,
     cycleCounts: {},
+    hasOnboarded: false,
 };
 
 async function readSettings(): Promise<Settings> {
@@ -81,6 +83,25 @@ export async function setCycleCount(techniqueId: string, count: number): Promise
             ...settings,
             cycleCounts: { ...settings.cycleCounts, [techniqueId]: count },
         };
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (error) {
+        console.error('[settingsStore] Failed to save settings:', error);
+        throw error;
+    }
+}
+
+/**
+ * Whether the user has completed the first-run onboarding intro.
+ */
+export async function getHasOnboarded(): Promise<boolean> {
+    const settings = await readSettings();
+    return settings.hasOnboarded;
+}
+
+export async function setHasOnboarded(value: boolean): Promise<void> {
+    try {
+        const settings = await readSettings();
+        const updated: Settings = { ...settings, hasOnboarded: value };
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     } catch (error) {
         console.error('[settingsStore] Failed to save settings:', error);

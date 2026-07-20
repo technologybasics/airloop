@@ -70,11 +70,21 @@ export function SessionScreen({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Pressable onPress={onClose} hitSlop={12}>
+        <Pressable
+          onPress={onClose}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Close session"
+        >
           <Feather name="chevron-left" size={20} color={colors.primary} />
         </Pressable>
         <Text style={styles.headerTitle}>{technique.label}</Text>
-        <Pressable onPress={onToggleDefault} hitSlop={12}>
+        <Pressable
+          onPress={onToggleDefault}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={isDefault ? 'Remove as default technique' : 'Set as default technique'}
+        >
           <Feather name="star" size={18} color={isDefault ? colors.accent : colors.primary} />
         </Pressable>
       </View>
@@ -110,12 +120,16 @@ export function SessionScreen({
                     reset();
                 }}
                 hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel="Reset session"
             >
               <Feather name="refresh-cw" size={20} color={colors.textSecondary} />
             </Pressable>
             <Pressable
               onPress={isRunning ? pause : start}
               style={styles.playButton}
+              accessibilityRole="button"
+              accessibilityLabel={isRunning ? 'Pause session' : 'Resume session'}
             >
               <Feather
                 name={isRunning ? 'pause' : 'play'}
@@ -123,7 +137,12 @@ export function SessionScreen({
                 color={colors.background}
               />
             </Pressable>
-            <Pressable onPress={onClose} hitSlop={12}>
+            <Pressable
+              onPress={onClose}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel="Close session"
+            >
               <Feather name="x" size={20} color={colors.textSecondary} />
             </Pressable>
           </>
