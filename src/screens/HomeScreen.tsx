@@ -8,6 +8,8 @@ type Props = {
   streakDays: number;
   onSelectTechnique: (technique: Technique) => void;
   defaultTechniqueId: string | null;
+  onOpenSettings: () => void;
+  onOpenProgress: () => void;
 };
 
 const PRO_TECHNIQUE_IDS = ['deepreset', 'energize'];
@@ -36,7 +38,13 @@ function TechniqueCard({
   );
 }
 
-export function HomeScreen({ streakDays, onSelectTechnique, defaultTechniqueId }: Props) {
+export function HomeScreen({
+  streakDays,
+  onSelectTechnique,
+  defaultTechniqueId,
+  onOpenSettings,
+  onOpenProgress,
+}: Props) {
   const standardTechniques = TECHNIQUES.filter(
     (technique) => !PRO_TECHNIQUE_IDS.includes(technique.id)
   );
@@ -49,9 +57,19 @@ export function HomeScreen({ streakDays, onSelectTechnique, defaultTechniqueId }
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
-      <View style={styles.greeting}>
-        <Text style={styles.greetingSmall}>Good evening</Text>
-        <Text style={styles.greetingBig}>Ready to breathe?</Text>
+      <View style={styles.greetingRow}>
+        <View style={styles.greeting}>
+          <Text style={styles.greetingSmall}>Good evening</Text>
+          <Text style={styles.greetingBig}>Ready to breathe?</Text>
+        </View>
+        <View style={styles.headerIcons}>
+          <Pressable onPress={onOpenProgress} hitSlop={12}>
+            <Feather name="bar-chart-2" size={20} color={colors.textSecondary} />
+          </Pressable>
+          <Pressable onPress={onOpenSettings} hitSlop={12}>
+            <Feather name="settings" size={20} color={colors.textSecondary} />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.streakCard}>
@@ -99,7 +117,18 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xl,
     paddingBottom: spacing.xl,
   },
-  greeting: { marginBottom: spacing.lg },
+  greetingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  greeting: {},
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
   greetingSmall: { color: colors.textSecondary, fontSize: 13 },
   greetingBig: {
     color: colors.textPrimary,

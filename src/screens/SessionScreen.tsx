@@ -9,12 +9,26 @@ import { colors, radii, spacing } from '../constants/theme';
 type Props = {
   technique: Technique;
   onClose: () => void;
-  onComplete: (summary: { techniqueId: string; cyclesCompleted: number }) => void;
+  onComplete: (summary: {
+    techniqueId: string;
+    cyclesCompleted: number;
+    durationSec: number;
+  }) => void;
   isDefault: boolean;
   onToggleDefault: () => void;
+  cycleCount: number;
+  hapticsEnabled: boolean;
 };
 
-export function SessionScreen({ technique, onClose, onComplete, isDefault, onToggleDefault }: Props) {
+export function SessionScreen({
+  technique,
+  onClose,
+  onComplete,
+  isDefault,
+  onToggleDefault,
+  cycleCount,
+  hapticsEnabled,
+}: Props) {
   const {
     currentPhase,
     phaseIndex,
@@ -26,7 +40,7 @@ export function SessionScreen({ technique, onClose, onComplete, isDefault, onTog
     start,
     pause,
     reset,
-  } = useBreathingCycle(technique, technique.defaultCycles);
+  } = useBreathingCycle(technique, cycleCount, hapticsEnabled);
 
   const hasCompletedRef = React.useRef(false);
   const [hasStarted, setHasStarted] = React.useState(false);
@@ -39,7 +53,15 @@ export function SessionScreen({ technique, onClose, onComplete, isDefault, onTog
     React.useEffect(() => {
         if (isComplete && !hasCompletedRef.current) {
             hasCompletedRef.current = true;
-            onComplete({ techniqueId: technique.id, cyclesCompleted: totalCycles });
+            const cycleDurationSec = technique.phases.reduce(
+                (sum, phase) => sum + phase.durationSec,
+                0
+            );
+            onComplete({
+                techniqueId: technique.id,
+                cyclesCompleted: totalCycles,
+                durationSec: cycleDurationSec * totalCycles,
+            });
         }
     }, [isComplete]);
 

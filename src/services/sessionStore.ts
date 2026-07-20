@@ -94,6 +94,6 @@ function generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function toCalendarDay(date: Date): string {
+export function toCalendarDay(date: Date): string {
     return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }

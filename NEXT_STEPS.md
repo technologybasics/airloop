@@ -63,8 +63,8 @@ As a user, I want to adjust cycle count and toggle sound/haptics per
 technique, so the app fits my actual routine.
 
 - New `src/screens/SettingsScreen.tsx`
-- Settings to expose: cycles for Box breathing, cycles for 4-7-8,
-  haptics on/off, sound on/off
+- Settings to expose: cycles for Box breathing, cycles for 4-7-8, cycles for Coherent breathing, cycles for Calm Breathing, cycles for Deep Reset, cycles for Energize,
+  haptics on/off
 - Persist settings via AsyncStorage (`src/services/settingsStore.ts`)
 - Wire the settings gear icon already in `SessionScreen.tsx` header to
   navigate here (simple state toggle in `App.tsx` is fine, no nav library yet)
@@ -77,7 +77,7 @@ technique, so the app fits my actual routine.
 
 ## Phase 3 — Progress & retention
 
-### Story 6: Session complete summary screen
+    ### Story 6: Session complete summary screen
 As a user, I want a brief summary after finishing a session (cycles done,
 duration, streak), so completing feels rewarding.
 
