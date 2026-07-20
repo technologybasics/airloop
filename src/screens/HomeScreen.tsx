@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { TECHNIQUES, Technique } from '../constants/phases';
 import { colors, radii, spacing } from '../constants/theme';
@@ -10,9 +10,45 @@ type Props = {
   defaultTechniqueId: string | null;
 };
 
-export function HomeScreen({ streakDays, onSelectTechnique, defaultTechniqueId }: Props) {
+const PRO_TECHNIQUE_IDS = ['deepreset', 'energize'];
+
+function TechniqueCard({
+  technique,
+  isDefault,
+  onSelectTechnique,
+}: {
+  technique: Technique;
+  isDefault: boolean;
+  onSelectTechnique: (technique: Technique) => void;
+}) {
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.card} onPress={() => onSelectTechnique(technique)}>
+      <View style={styles.cardIconWrap}>
+        <Feather name={technique.icon as any} size={22} color={colors.primary} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.cardTitle}>{technique.label}</Text>
+        <Text style={styles.cardSubtitle}>{technique.subtitle}</Text>
+      </View>
+      {isDefault && <Feather name="star" size={14} color={colors.accent} />}
+      <Feather name="chevron-right" size={18} color={colors.textMuted} />
+    </Pressable>
+  );
+}
+
+export function HomeScreen({ streakDays, onSelectTechnique, defaultTechniqueId }: Props) {
+  const standardTechniques = TECHNIQUES.filter(
+    (technique) => !PRO_TECHNIQUE_IDS.includes(technique.id)
+  );
+  const proTechniques = TECHNIQUES.filter((technique) =>
+    PRO_TECHNIQUE_IDS.includes(technique.id)
+  );
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.greeting}>
         <Text style={styles.greetingSmall}>Good evening</Text>
         <Text style={styles.greetingBig}>Ready to breathe?</Text>
@@ -30,38 +66,26 @@ export function HomeScreen({ streakDays, onSelectTechnique, defaultTechniqueId }
 
       <Text style={styles.sectionLabel}>Techniques</Text>
 
-      {TECHNIQUES.map((technique) => (
-        <Pressable
+      {standardTechniques.map((technique) => (
+        <TechniqueCard
           key={technique.id}
-          style={styles.card}
-          onPress={() => onSelectTechnique(technique)}
-        >
-          <View style={styles.cardIconWrap}>
-            <Feather name={technique.icon as any} size={22} color={colors.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.cardTitle}>{technique.label}</Text>
-            <Text style={styles.cardSubtitle}>{technique.subtitle}</Text>
-          </View>
-          {technique.id === defaultTechniqueId && (
-            <Feather name="star" size={14} color={colors.accent} />
-          )}
-          <Feather name="chevron-right" size={18} color={colors.textMuted} />
-        </Pressable>
+          technique={technique}
+          isDefault={technique.id === defaultTechniqueId}
+          onSelectTechnique={onSelectTechnique}
+        />
       ))}
 
-      <View style={[styles.card, styles.cardGhost]}>
-        <View style={[styles.cardIconWrap, { backgroundColor: colors.card }]}>
-          <Feather name="plus" size={20} color={colors.textMuted} />
-        </View>
-        <View>
-          <Text style={styles.cardGhostTitle}>More techniques</Text>
-          <Text style={styles.cardGhostSubtitle}>
-            Mindfulness and relaxation, coming soon
-          </Text>
-        </View>
-      </View>
-    </View>
+      <Text style={styles.sectionLabel}>Pro</Text>
+
+      {proTechniques.map((technique) => (
+        <TechniqueCard
+          key={technique.id}
+          technique={technique}
+          isDefault={technique.id === defaultTechniqueId}
+          onSelectTechnique={onSelectTechnique}
+        />
+      ))}
+    </ScrollView>
   );
 }
 
@@ -69,8 +93,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  contentContainer: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
+    paddingBottom: spacing.xl,
   },
   greeting: { marginBottom: spacing.lg },
   greetingSmall: { color: colors.textSecondary, fontSize: 13 },
@@ -105,6 +132,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 12,
     fontWeight: '500',
+    marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   card: {
@@ -128,11 +156,4 @@ const styles = StyleSheet.create({
   },
   cardTitle: { color: colors.textPrimary, fontSize: 15, fontWeight: '500' },
   cardSubtitle: { color: colors.textSecondary, fontSize: 12, marginTop: 3 },
-  cardGhost: { opacity: 0.6, borderStyle: 'dashed' },
-  cardGhostTitle: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  cardGhostSubtitle: { color: colors.textMuted, fontSize: 12, marginTop: 3 },
 });
