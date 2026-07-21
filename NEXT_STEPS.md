@@ -169,15 +169,14 @@ screens, instead of manual state toggling in `App.tsx`.
 
 ## Phase 6 — App Store readiness
 
-### Story 12: App identity — icon, splash screen, name
+### Story 12: App identity — icon, splash screen, name ✅ DONE
 As a user browsing the App Store, I want a polished icon and launch
 experience.
 
 - Design/generate app icon (1024x1024) and splash screen matching the
   Ocean Breath theme (deep teal background, simple breathing-circle mark)
 - Configure in `app.json` under `expo.icon` and `expo.splash`
-- Finalize app display name (confirm with whatever you landed on —
-  "Breathe Box" / "Pace" / "Still" / etc.)
+- Finalize app display name - Airloop
 - Acceptance: icon and splash render correctly on a real device build,
   not just Expo Go
 

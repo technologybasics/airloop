@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AppSettingsProvider, useAppSettings } from '../src/context/AppSettingsContext';
 import { colors } from '../src/constants/theme';
 
+SplashScreen.preventAutoHideAsync();
+
 function RootStack() {
     const { hasOnboarded } = useAppSettings();
+
+    useEffect(() => {
+        if (hasOnboarded !== null) {
+            SplashScreen.hideAsync();
+        }
+    }, [hasOnboarded]);
 
     if (hasOnboarded === null) {
         // Still loading the onboarding flag — render nothing rather than
