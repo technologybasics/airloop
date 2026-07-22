@@ -8,23 +8,32 @@ type Props = {
   onClose: () => void;
 };
 
-const DAYS_IN_GRID = 56; // last 8 weeks
-const WEEKDAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const WEEKDAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
-function buildGridDays(): Date[] {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - (DAYS_IN_GRID - 1));
+function startOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
 
-  return Array.from({ length: DAYS_IN_GRID }, (_, i) => {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
-    return d;
-  });
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+// Re-index JS's Sunday-first getDay() (0-6) to Monday-first (0-6).
+function mondayIndex(jsWeekday: number): number {
+  return (jsWeekday + 6) % 7;
 }
 
 export function ProgressScreen({ onClose }: Props) {
   const [activeDays, setActiveDays] = React.useState<Set<string>>(new Set());
+  const [visibleMonth, setVisibleMonth] = React.useState(() => startOfMonth(new Date()));
 
   React.useEffect(() => {
     (async () => {
@@ -37,17 +46,48 @@ export function ProgressScreen({ onClose }: Props) {
     })();
   }, []);
 
-  const days = React.useMemo(buildGridDays, []);
-  const activeCount = days.filter((d) => activeDays.has(toCalendarDay(d))).length;
-  const weekdayHeader = React.useMemo(() => {
-    const startWeekday = days[0].getDay();
-    return Array.from({ length: 7 }, (_, c) => WEEKDAY_LETTERS[(startWeekday + c) % 7]);
-  }, [days]);
+  const today = new Date();
+  const isCurrentMonth =
+    visibleMonth.getFullYear() === today.getFullYear() &&
+    visibleMonth.getMonth() === today.getMonth();
 
-  const rows: Date[][] = [];
-  for (let i = 0; i < days.length; i += 7) {
-    rows.push(days.slice(i, i + 7));
-  }
+  const weeks = React.useMemo(() => {
+    const year = visibleMonth.getFullYear();
+    const month = visibleMonth.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const leadingBlanks = mondayIndex(new Date(year, month, 1).getDay());
+
+    const cells: (Date | null)[] = [
+      ...Array.from({ length: leadingBlanks }, () => null),
+      ...Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1)),
+    ];
+    const trailingBlanks = (7 - (cells.length % 7)) % 7;
+    cells.push(...Array.from({ length: trailingBlanks }, () => null));
+
+    const rows: (Date | null)[][] = [];
+    for (let i = 0; i < cells.length; i += 7) {
+      rows.push(cells.slice(i, i + 7));
+    }
+    return rows;
+  }, [visibleMonth]);
+
+  const practicedCount = React.useMemo(
+    () =>
+      weeks
+        .flat()
+        .filter((d): d is Date => d !== null)
+        .filter((d) => activeDays.has(toCalendarDay(d))).length,
+    [weeks, activeDays]
+  );
+
+  const goToPreviousMonth = () => {
+    setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    if (isCurrentMonth) return;
+    setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -64,31 +104,71 @@ export function ProgressScreen({ onClose }: Props) {
         <View style={{ width: 20 }} />
       </View>
 
-      <Text style={styles.subtitle}>
-        {activeCount} of last {DAYS_IN_GRID} days practiced
-      </Text>
-
-      <View style={styles.weekdayRow}>
-        {weekdayHeader.map((letter, i) => (
-          <Text key={i} style={styles.weekdayLabel}>
-            {letter}
+      <View style={styles.calendarCard}>
+        <View style={styles.calendarHeader}>
+          <Pressable
+            onPress={goToPreviousMonth}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Previous month"
+          >
+            <Feather name="chevron-left" size={20} color={colors.textSecondary} />
+          </Pressable>
+          <Text style={styles.monthLabel}>
+            {MONTH_NAMES[visibleMonth.getMonth()]} {visibleMonth.getFullYear()}
           </Text>
+          <Pressable
+            onPress={goToNextMonth}
+            hitSlop={12}
+            disabled={isCurrentMonth}
+            accessibilityRole="button"
+            accessibilityLabel="Next month"
+          >
+            <Feather
+              name="chevron-right"
+              size={20}
+              color={isCurrentMonth ? colors.textMuted : colors.textSecondary}
+            />
+          </Pressable>
+        </View>
+
+        <Text style={styles.practicedLabel}>
+          {practicedCount} day{practicedCount === 1 ? '' : 's'} practiced
+        </Text>
+
+        <View style={styles.weekdayRow}>
+          {WEEKDAY_LETTERS.map((letter, i) => (
+            <Text key={i} style={styles.weekdayLabel}>
+              {letter}
+            </Text>
+          ))}
+        </View>
+
+        {weeks.map((row, rowIndex) => (
+          <View key={rowIndex} style={styles.gridRow}>
+            {row.map((day, cellIndex) => {
+              if (!day) {
+                return <View key={cellIndex} style={styles.cell} />;
+              }
+              const isActive = activeDays.has(toCalendarDay(day));
+              const isToday = isSameDay(day, today);
+              return (
+                <View key={cellIndex} style={styles.cell}>
+                  <View
+                    style={[
+                      styles.dayCircle,
+                      isActive && styles.dayCircleActive,
+                      isToday && !isActive && styles.dayCircleToday,
+                    ]}
+                  >
+                    <Text style={styles.dayNumber}>{day.getDate()}</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
         ))}
       </View>
-
-      {rows.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.gridRow}>
-          {row.map((day) => {
-            const isActive = activeDays.has(toCalendarDay(day));
-            return (
-              <View
-                key={day.toISOString()}
-                style={[styles.cell, isActive ? styles.cellActive : styles.cellInactive]}
-              />
-            );
-          })}
-        </View>
-      ))}
     </ScrollView>
   );
 }
@@ -114,39 +194,73 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  subtitle: {
+  calendarCard: {
+    backgroundColor: colors.card,
+    borderWidth: 0.5,
+    borderColor: colors.cardBorder,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  monthLabel: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  practicedLabel: {
+    textAlign: 'center',
     color: colors.textSecondary,
     fontSize: 13,
     marginBottom: spacing.md,
   },
   weekdayRow: {
     flexDirection: 'row',
-    gap: spacing.xs,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   gridRow: {
     flexDirection: 'row',
-    gap: spacing.xs,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   weekdayLabel: {
     flex: 1,
     textAlign: 'center',
     color: colors.textMuted,
-    fontSize: 11,
+    fontSize: 12,
+    fontWeight: '600',
   },
   cell: {
     flex: 1,
     aspectRatio: 1,
-    borderRadius: radii.sm / 2,
-    borderWidth: 0.5,
-    borderColor: colors.cardBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  cellActive: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
+  dayCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: radii.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  cellInactive: {
-    backgroundColor: colors.card,
+  dayCircleActive: {
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  dayCircleToday: {
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+  },
+  dayNumber: {
+    color: colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

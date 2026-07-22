@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { TECHNIQUES } from '../constants/phases';
+import { PRO_TECHNIQUE_IDS, SHOW_PRO_TECHNIQUES, TECHNIQUES } from '../constants/phases';
 import { colors, radii, spacing } from '../constants/theme';
 
 type Props = {
@@ -22,6 +22,10 @@ export function SettingsScreen({
   hapticsEnabled,
   onChangeHapticsEnabled,
 }: Props) {
+  const visibleTechniques = SHOW_PRO_TECHNIQUES
+    ? TECHNIQUES
+    : TECHNIQUES.filter((technique) => !PRO_TECHNIQUE_IDS.includes(technique.id));
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
@@ -52,7 +56,7 @@ export function SettingsScreen({
       </View>
 
       <Text style={styles.sectionLabel}>Cycle count</Text>
-      {TECHNIQUES.map((technique) => {
+      {visibleTechniques.map((technique) => {
         const count = cycleCounts[technique.id] ?? technique.defaultCycles;
         return (
           <View key={technique.id} style={styles.row}>

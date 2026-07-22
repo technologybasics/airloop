@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { TECHNIQUES, Technique } from '../constants/phases';
+import { PRO_TECHNIQUE_IDS, SHOW_PRO_TECHNIQUES, TECHNIQUES, Technique } from '../constants/phases';
 import { colors, radii, spacing } from '../constants/theme';
 
 type Props = {
@@ -11,9 +11,6 @@ type Props = {
   onOpenSettings: () => void;
   onOpenProgress: () => void;
 };
-
-const PRO_TECHNIQUE_IDS = ['deepreset', 'energize'];
-const SHOW_PRO_TECHNIQUES = false; // flip to true when monetization ships
 
 function TechniqueCard({
   technique,

@@ -98,3 +98,6 @@ export const TECHNIQUES: Technique[] = [
   DEEP_RESET,
   ENERGIZE,
 ];
+
+export const PRO_TECHNIQUE_IDS = ['deepreset', 'energize'];
+export const SHOW_PRO_TECHNIQUES = false; // flip to true when monetization ships

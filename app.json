@@ -2,6 +2,7 @@
   "expo": {
     "name": "AirLoop",
     "slug": "airloop",
+    "owner": "technologynext",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,11 +12,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.technologynext.airloop",
-      "buildNumber": "1"
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "org.technologynext.airloop",
-      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#0D1F1E",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -41,6 +43,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "62476371-6365-49a8-a318-0947f007f5b6"
+      }
     }
   }
 }
