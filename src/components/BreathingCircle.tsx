@@ -7,13 +7,16 @@ type Props = {
   phase: Phase;
   secondsLeft: number;
   isRunning: boolean;
+  hasStarted: boolean;
 };
 
 const BASE_SIZE = 120;
 const RING_SIZE = 220;
 
-export function BreathingCircle({ phase, secondsLeft, isRunning }: Props) {
+export function BreathingCircle({ phase, secondsLeft, isRunning, hasStarted }: Props) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const startAnim = useRef(new Animated.Value(hasStarted ? 1 : 0)).current;
+  const pulseAnim = useRef(new Animated.Value(0)).current;
   const [reduceMotionEnabled, setReduceMotionEnabled] = useState(false);
 
   useEffect(() => {
@@ -56,6 +59,30 @@ export function BreathingCircle({ phase, secondsLeft, isRunning }: Props) {
       AccessibilityInfo.announceForAccessibility(`${phase.name}, ${secondsLeft} seconds`);
   }, [phase.name, isRunning]);
 
+  useEffect(() => {
+      Animated.timing(startAnim, {
+          toValue: hasStarted ? 1 : 0,
+          duration: 450,
+          useNativeDriver: true,
+      }).start();
+  }, [hasStarted, startAnim]);
+
+  useEffect(() => {
+      if (hasStarted || reduceMotionEnabled) {
+          pulseAnim.stopAnimation();
+          pulseAnim.setValue(0);
+          return;
+      }
+      const loop = Animated.loop(
+          Animated.sequence([
+              Animated.timing(pulseAnim, { toValue: 1, duration: 1100, useNativeDriver: true }),
+              Animated.timing(pulseAnim, { toValue: 0, duration: 1100, useNativeDriver: true }),
+          ])
+      );
+      loop.start();
+      return () => loop.stop();
+  }, [hasStarted, reduceMotionEnabled, pulseAnim]);
+
   return (
     <View style={styles.wrap}>
       <View style={styles.ring} />
@@ -63,10 +90,31 @@ export function BreathingCircle({ phase, secondsLeft, isRunning }: Props) {
         style={[styles.circle, { transform: [{ scale: scaleAnim }] }]}
         accessible
         accessibilityLiveRegion="polite"
-        accessibilityLabel={`${phase.name}, ${secondsLeft} seconds`}
+        accessibilityLabel={
+          hasStarted ? `${phase.name}, ${secondsLeft} seconds` : 'Ready to begin'
+        }
       >
-        <Text style={styles.phaseLabel}>{phase.name}</Text>
-        <Text style={styles.count}>{secondsLeft}</Text>
+        <Animated.View
+          style={[
+            styles.readyWrap,
+            {
+              opacity: startAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+              transform: [
+                {
+                  scale: pulseAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }),
+                },
+              ],
+            },
+          ]}
+          pointerEvents="none"
+        >
+          <Text style={styles.readyLabel}>Ready?</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.readyWrap, { opacity: startAnim }]} pointerEvents="none">
+          <Text style={styles.phaseLabel}>{phase.name}</Text>
+          <Text style={styles.count}>{secondsLeft}</Text>
+        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -105,5 +153,15 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '500',
     marginTop: 4,
+  },
+  readyWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  readyLabel: {
+    color: colors.primary,
+    fontSize: 17,
+    fontWeight: '600',
   },
 });

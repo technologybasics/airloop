@@ -13,6 +13,7 @@ type Props = {
 };
 
 const PRO_TECHNIQUE_IDS = ['deepreset', 'energize'];
+const SHOW_PRO_TECHNIQUES = false; // flip to true when monetization ships
 
 function TechniqueCard({
   technique,
@@ -103,16 +104,20 @@ export function HomeScreen({
         />
       ))}
 
-      <Text style={styles.sectionLabel}>Pro</Text>
+      {SHOW_PRO_TECHNIQUES && (
+        <>
+          <Text style={styles.sectionLabel}>Pro</Text>
 
-      {proTechniques.map((technique) => (
-        <TechniqueCard
-          key={technique.id}
-          technique={technique}
-          isDefault={technique.id === defaultTechniqueId}
-          onSelectTechnique={onSelectTechnique}
-        />
-      ))}
+          {proTechniques.map((technique) => (
+            <TechniqueCard
+              key={technique.id}
+              technique={technique}
+              isDefault={technique.id === defaultTechniqueId}
+              onSelectTechnique={onSelectTechnique}
+            />
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }

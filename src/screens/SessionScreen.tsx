@@ -90,7 +90,12 @@ export function SessionScreen({
       </View>
 
       <View style={styles.circleWrap}>
-        <BreathingCircle phase={currentPhase} secondsLeft={secondsLeft} isRunning={isRunning} />
+        <BreathingCircle
+          phase={currentPhase}
+          secondsLeft={secondsLeft}
+          isRunning={isRunning}
+          hasStarted={hasStarted}
+        />
       </View>
 
       <View style={styles.dots}>
