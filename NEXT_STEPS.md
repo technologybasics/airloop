@@ -184,7 +184,7 @@ experience.
 As a developer, I want `app.json` fully configured for an App Store build.
 
 - Set `expo.ios.bundleIdentifier` (reverse-DNS, e.g.
-  `app.technologynext.breathe`)
+  `org.technologynext.airloop`)
 - Set version + build number
 - Add required permission usage strings if any (likely none needed for
   MVP — no camera/location/mic — double check once haptics/sound are in)

@@ -9,9 +9,13 @@
     "userInterfaceStyle": "light",
     "backgroundColor": "#0D1F1E",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "org.technologynext.airloop",
+      "buildNumber": "1"
     },
     "android": {
+      "package": "org.technologynext.airloop",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#0D1F1E",
         "foregroundImage": "./assets/android-icon-foreground.png",
