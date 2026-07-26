@@ -223,7 +223,7 @@ disclosure, required for submission.
 - Acceptance: privacy policy URL live and accessible, App Privacy section
   complete in App Store Connect
 
-### Story 17: App Store listing content
+### Story 17: App Store listing content ✅ DONE
 As a developer, I need screenshots, description, and keywords for the
 listing.
 
