@@ -80,15 +80,21 @@ export function HomeScreen({
         </View>
       </View>
 
-      <View style={styles.streakCard}>
+      <Pressable
+        style={styles.streakCard}
+        onPress={onOpenProgress}
+        accessibilityRole="button"
+        accessibilityLabel={`${streakDays} day streak, view progress`}
+      >
         <View style={styles.streakIconWrap}>
           <Feather name="zap" size={18} color={colors.accent} />
         </View>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.streakTitle}>{streakDays} day streak</Text>
           <Text style={styles.streakSubtitle}>Keep it going today</Text>
         </View>
-      </View>
+        <Feather name="chevron-right" size={18} color={colors.textMuted} />
+      </Pressable>
 
       <Text style={styles.sectionLabel}>Techniques</Text>
 

@@ -209,7 +209,7 @@ public submission.
 - Acceptance: no crashes, no regressions vs. Expo Go behavior, at least a
   few days of real personal use logged without issues
 
-### Story 16: Privacy policy + App Store privacy details
+### Story 16: Privacy policy + App Store privacy details ✅ DONE
 As a developer, I need a privacy policy URL and accurate data-collection
 disclosure, required for submission.
 

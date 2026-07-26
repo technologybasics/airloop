@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { getSessions, toCalendarDay } from '../services/sessionStore';
+import { useAppSettings } from '../context/AppSettingsContext';
 import { colors, radii, spacing } from '../constants/theme';
 
 type Props = {
@@ -32,6 +33,7 @@ function mondayIndex(jsWeekday: number): number {
 }
 
 export function ProgressScreen({ onClose }: Props) {
+  const { streakDays } = useAppSettings();
   const [activeDays, setActiveDays] = React.useState<Set<string>>(new Set());
   const [visibleMonth, setVisibleMonth] = React.useState(() => startOfMonth(new Date()));
 
@@ -102,6 +104,16 @@ export function ProgressScreen({ onClose }: Props) {
         </Pressable>
         <Text style={styles.headerTitle}>Progress</Text>
         <View style={{ width: 20 }} />
+      </View>
+
+      <View style={styles.streakCard}>
+        <View style={styles.streakIconWrap}>
+          <Feather name="zap" size={18} color={colors.accent} />
+        </View>
+        <View>
+          <Text style={styles.streakTitle}>{streakDays} day streak</Text>
+          <Text style={styles.streakSubtitle}>Keep it going today</Text>
+        </View>
       </View>
 
       <View style={styles.calendarCard}>
@@ -194,6 +206,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  streakCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.card,
+    borderWidth: 0.5,
+    borderColor: colors.cardBorder,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  streakIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: radii.full,
+    backgroundColor: colors.circleFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  streakTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: '500' },
+  streakSubtitle: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
   calendarCard: {
     backgroundColor: colors.card,
     borderWidth: 0.5,
