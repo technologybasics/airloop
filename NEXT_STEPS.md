@@ -234,6 +234,17 @@ listing.
 - Choose category (Health & Fitness) and age rating
 - Acceptance: all App Store Connect listing fields complete
 
+### Story 17b: Support page for App Store listing ✅ DONE
+As a developer, I need a Support URL for App Store Connect, separate from
+the privacy policy.
+
+- Create `docs/support.html` — same minimal, self-contained style as
+  `privacy-policy.html`, contact email only (`support@technologynext.org`)
+- Hosted via the same GitHub Pages setup as the privacy policy:
+  `https://technologybasics.github.io/airloop/support.html`
+- Acceptance: support URL live and accessible, entered in App Store
+  Connect's "Support URL" field
+
 ### Story 18: Submit for review
 As a developer, I want to submit the final build for Apple review.
 
